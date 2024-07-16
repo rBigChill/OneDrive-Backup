@@ -38,6 +38,7 @@ function Send-Email {
     $mail.Subject = $subject
     $mail.Body = $body
     $mail.Send()
+    $one.Quit()
 }
 
 function Get-DriveContents {
