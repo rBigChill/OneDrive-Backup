@@ -1,10 +1,9 @@
 ﻿# Log
-$logFile = "$HOME\Scripts\OneDrive-Backup\OneDrive-BackupLog.txt"
 $emailLog = "$HOME\Scripts\OneDrive-Backup\OneDrive-EmailLog.txt"
 
 # Drive locations
 $oneDrive = "$HOME\OneDrive"
-$netDrive = "D:\DadOneDriveBackup"
+$netDrive = "D:\OneDriveBackup"
 
 # Write-Log appends log service messages to file
 function Write-Log {
@@ -13,7 +12,6 @@ function Write-Log {
     )
     $currentTime = Get-Date
     $logMessage = "$currentTime : $message"
-    Add-Content $logFile $logMessage
     Add-Content $emaillog $logMessage
 }
 
@@ -32,13 +30,16 @@ function Send-Email {
         [string]$subject,
         [string]$body
     )
-    $one = New-Object -ComObject Outlook.Application
-    $mail = $one.CreateItem(0)
+    $outlook = New-Object -ComObject Outlook.Application
+    $mail = $outlook.CreateItem(0)
     $mail.to = "cisneros.jorge.a@gmail.com"
     $mail.Subject = $subject
     $mail.Body = $body
     $mail.Send()
-    $one.Quit()
+    $namespace = $outlook.GetNameSpace("MAPI")
+    $outbox = $namespace.GetDefaultFolder(4)
+    while ($outbox.Items.Count -gt 0) {Write-Host "Sending..."; sleep 1}
+    #ps outlook | select id | kill
 }
 
 function Get-DriveContents {
